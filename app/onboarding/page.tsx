@@ -124,6 +124,10 @@ export default function OnboardingPage() {
         body: JSON.stringify(body),
       })
 
+      if (res.status === 401 || res.status === 403) {
+        router.push('/login')
+        return false
+      }
       if (!res.ok) {
         const data = await res.json()
         setError(data.error || 'Failed to save')

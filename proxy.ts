@@ -36,6 +36,9 @@ export async function proxy(request: NextRequest) {
   const token = request.cookies.get('nm_token')?.value
 
   if (!token) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+    }
     const loginUrl = new URL('/login', request.url)
     return NextResponse.redirect(loginUrl)
   }
@@ -62,6 +65,9 @@ export async function proxy(request: NextRequest) {
     subStatus !== 'active' &&
     !pathname.startsWith('/subscribe')
   ) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Subscription required' }, { status: 403 })
+    }
     const subscribeUrl = new URL('/subscribe', request.url)
     return NextResponse.redirect(subscribeUrl)
   }
