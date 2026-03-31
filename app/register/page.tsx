@@ -8,13 +8,21 @@ export default function RegisterPage() {
   const router = useRouter()
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
+  const [emailConfirm, setEmailConfirm] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const emailsMatch = email.length > 0 && emailConfirm.length > 0 && email.toLowerCase() === emailConfirm.toLowerCase()
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+
+    if (!emailsMatch) {
+      setError('Email addresses do not match')
+      return
+    }
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters')
@@ -116,6 +124,29 @@ export default function RegisterPage() {
                   placeholder="you@example.com"
                   required
                   autoComplete="email"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="form-label" htmlFor="emailConfirm">Confirm email</label>
+                  {emailsMatch && (
+                    <span className="text-xs font-semibold flex items-center gap-1" style={{ color: '#16a34a' }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#16a34a"/><path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      Emails match
+                    </span>
+                  )}
+                </div>
+                <input
+                  id="emailConfirm"
+                  type="email"
+                  className="form-input"
+                  value={emailConfirm}
+                  onChange={(e) => setEmailConfirm(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  autoComplete="off"
+                  style={emailConfirm.length > 0 && !emailsMatch ? { borderColor: '#C41E3A' } : emailsMatch ? { borderColor: '#16a34a' } : {}}
                 />
               </div>
 
