@@ -37,7 +37,13 @@ export default function RegisterPage() {
         return
       }
 
-      // Go straight to Stripe checkout
+      // Free founding member — go straight to onboarding
+      if (data.isFree) {
+        router.push('/onboarding')
+        return
+      }
+
+      // Paid — go to Stripe checkout
       const checkoutRes = await fetch('/api/stripe/create-checkout', { method: 'POST' })
       const checkoutData = await checkoutRes.json()
       if (checkoutData.url) {

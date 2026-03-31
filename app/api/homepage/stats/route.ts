@@ -7,16 +7,13 @@ export async function GET() {
   try {
     await connectDB()
 
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-    const recentUserCount = await User.countDocuments({
-      createdAt: { $gte: thirtyDaysAgo },
-    })
+    const totalUsers = await User.countDocuments()
+    const freeSpotsTaken = Math.min(totalUsers, 100)
+    const freeSpotsLeft = Math.max(0, 100 - totalUsers)
 
     const recentProfiles = await Profile.find({ isVisible: true })
       .sort({ createdAt: -1 })
-      .limit(8)
+      .limit(12)
       .select('firstName photos currentLocation')
       .lean()
 
@@ -27,7 +24,13 @@ export async function GET() {
       country: p.currentLocation?.country || null,
     }))
 
-    return NextResponse.json({ recentCount: recentUserCount, members })
+    return NextResponse.json({
+      totalUsers,
+      freeSpotsTaken,
+      freeSpotsLeft,
+      isFreeActive: totalUsers < 100,
+      members,
+    })
   } catch (err) {
     console.error('Stats error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

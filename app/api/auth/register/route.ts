@@ -49,11 +49,17 @@ export async function POST(request: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12)
 
+    // First 100 signups are free
+    const totalUsers = await User.countDocuments()
+    const isFree = totalUsers < 100
+
     const user = await User.create({
       email: email.toLowerCase(),
       passwordHash,
       username,
-      subscription: { status: 'none' },
+      subscription: isFree
+        ? { status: 'active', stripeCustomerId: null, stripeSubscriptionId: 'free_founding_member' }
+        : { status: 'none' },
       profileComplete: false,
     })
 
@@ -63,7 +69,7 @@ export async function POST(request: NextRequest) {
       username: user.username,
     })
 
-    const response = NextResponse.json({ username: user.username }, { status: 201 })
+    const response = NextResponse.json({ username: user.username, isFree }, { status: 201 })
     response.cookies.set('nm_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -72,7 +78,7 @@ export async function POST(request: NextRequest) {
       path: '/',
     })
     // Sub status cookie (readable by middleware on Edge)
-    response.cookies.set('nm_sub', 'none', {
+    response.cookies.set('nm_sub', isFree ? 'active' : 'none', {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
