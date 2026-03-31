@@ -134,8 +134,8 @@ export default function OnboardingPage() {
         return false
       }
       return true
-    } catch {
-      setError('Failed to save. Please try again.')
+    } catch (err) {
+      setError('Error: ' + String(err))
       return false
     } finally {
       setSaving(false)
