@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -13,7 +13,12 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const [freeSpotsLeft, setFreeSpotsLeft] = useState<number | null>(null)
   const passwordsMatch = password.length > 0 && passwordConfirm.length > 0 && password === passwordConfirm
+
+  useEffect(() => {
+    fetch('/api/homepage/stats').then(r => r.json()).then(d => setFreeSpotsLeft(d.freeSpotsLeft ?? null)).catch(() => {})
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -128,6 +133,20 @@ export default function RegisterPage() {
               </div>
 
               <div>
+                <label className="form-label" htmlFor="password">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  className="form-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Min. 8 characters"
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="form-label" htmlFor="passwordConfirm">Confirm password</label>
                   {passwordsMatch && (
@@ -150,26 +169,16 @@ export default function RegisterPage() {
                 />
               </div>
 
-              <div>
-                <label className="form-label" htmlFor="password">Password</label>
-                <input
-                  id="password"
-                  type="password"
-                  className="form-input"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 characters"
-                  required
-                  autoComplete="new-password"
-                />
-              </div>
-
               <button
                 type="submit"
                 className="btn-primary w-full py-3"
                 disabled={loading}
               >
-                {loading ? 'Redirecting to checkout...' : 'Create Account & Subscribe — $24/year'}
+                {loading
+                  ? 'Creating your account...'
+                  : freeSpotsLeft !== null && freeSpotsLeft > 0
+                    ? `Create Account — ${freeSpotsLeft} free spot${freeSpotsLeft === 1 ? '' : 's'} remaining`
+                    : 'Create Account — $24/year'}
               </button>
 
               <p className="text-xs text-center" style={{ color: '#9B9B9B' }}>
