@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       passwordHash,
       username,
       subscription: isFree
-        ? { status: 'active', stripeCustomerId: null, stripeSubscriptionId: 'free_founding_member' }
+        ? { status: 'active', stripeSubscriptionId: 'free_founding_member' }
         : { status: 'none' },
       profileComplete: false,
     })
