@@ -8,19 +8,19 @@ export default function RegisterPage() {
   const router = useRouter()
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
-  const [emailConfirm, setEmailConfirm] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const emailsMatch = email.length > 0 && emailConfirm.length > 0 && email.toLowerCase() === emailConfirm.toLowerCase()
+  const passwordsMatch = password.length > 0 && passwordConfirm.length > 0 && password === passwordConfirm
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
 
-    if (!emailsMatch) {
-      setError('Email addresses do not match')
+    if (!passwordsMatch) {
+      setError('Passwords do not match')
       return
     }
 
@@ -129,24 +129,24 @@ export default function RegisterPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="form-label" htmlFor="emailConfirm">Confirm email</label>
-                  {emailsMatch && (
+                  <label className="form-label" htmlFor="passwordConfirm">Confirm password</label>
+                  {passwordsMatch && (
                     <span className="text-xs font-semibold flex items-center gap-1" style={{ color: '#16a34a' }}>
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="7" fill="#16a34a"/><path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      Emails match
+                      Passwords match
                     </span>
                   )}
                 </div>
                 <input
-                  id="emailConfirm"
-                  type="email"
+                  id="passwordConfirm"
+                  type="password"
                   className="form-input"
-                  value={emailConfirm}
-                  onChange={(e) => setEmailConfirm(e.target.value)}
-                  placeholder="you@example.com"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  placeholder="Repeat your password"
                   required
-                  autoComplete="off"
-                  style={emailConfirm.length > 0 && !emailsMatch ? { borderColor: '#C41E3A' } : emailsMatch ? { borderColor: '#16a34a' } : {}}
+                  autoComplete="new-password"
+                  style={passwordConfirm.length > 0 && !passwordsMatch ? { borderColor: '#C41E3A' } : passwordsMatch ? { borderColor: '#16a34a' } : {}}
                 />
               </div>
 
